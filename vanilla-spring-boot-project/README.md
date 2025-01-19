@@ -34,3 +34,22 @@ java -jar vanilla-project-0.0.1-SNAPSHOT.jar
 We'll also need to attach an IAM role to the provisioned EC2 instance that provides permission to [copy objects](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html) from the S3 bucket.
 
 In this approach, we again install SDKMAN but only install Java since we already have the executable JAR in our S3 bucket. We use the AWS CLI (pre-installed on EC2 instances) to copy the file to the system and then execute it.
+
+### Deploying to ECS via ECR
+
+The base project contains a `Dockerfile` that can be used to run the Spring Boot application.
+
+First, on our local machine, we'll configure our IAM credentials using the [aws configure] command. We'll need the awscli installed on our local machine for this.
+
+The configured IAM user should have the [permission to push](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-push-iam.html) the image to a ECR repository.
+
+Then, we'll use the below commands to authenticate ourselves, create an image from our `Dockerfile`, tag the created image, and push it to our ECR repo:
+
+```bash
+aws ecr get-login-password --region REGION_CODE | docker login --username AWS --password-stdin ACCOUNT_ID.dkr.ecr.REGION_CODE.amazonaws.com
+docker build -t REPO_NAME .
+docker tag REPO_NAME:latest ACCOUNT_ID.dkr.ecr.REGION_CODE.amazonaws.com/REPO_NAME:latest
+docker push ACCOUNT_ID.dkr.ecr.REGION_CODE.amazonaws.com/REPO_NAME:latest
+```
+
+Now, we can use the image pushed to ECR to run our Spring Boot application using ECS.
