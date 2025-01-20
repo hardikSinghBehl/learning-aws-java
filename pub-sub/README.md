@@ -117,3 +117,19 @@ For simplicity, we'll use a single IAM user that holds permission to perform all
         "Resource": "arn:aws:kms:region-code:account-id:key/key-id"
     }
     ```
+   
+### Integrating With Secrets Manager
+
+For our demonstration, we'll store the SNS topic ARN and SQS queue URL to secrets manager and have our application fetch it during startup.
+
+1. Create a new secret in Secrets Manager and configure the topic arn and queue url in the key/value pairs. Use the key names of SNS_TOPIC_ARN and SQS_QUEUE_URL.
+2. Configure the secret-name in `application.yaml` file.
+3. Add the below `Statement` to the existing IAM user:
+    ```json
+    {
+        "Sid": "SecretFetcher",
+        "Effect": "Allow",
+        "Action": "secretsmanager:GetSecretValue",
+        "Resource": "arn:aws:secretsmanager:region-code:account-id:secret:secret-name"
+    }
+    ```

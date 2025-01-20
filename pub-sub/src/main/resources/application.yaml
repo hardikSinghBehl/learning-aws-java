@@ -4,14 +4,14 @@ spring:
       credentials:
         access-key: ${ACCESS_KEY}
         secret-key: ${SECRET_KEY}
-      sns:
-        region: ${AWS_REGION}
-      sqs:
-        region: ${AWS_REGION}
+      region:
+        static: ${AWS_REGION}
+  config:
+    import: aws-secretsmanager:secret-name
 
 com:
   upwork:
     sns:
-      topic-arn: arn:aws:sns:region-code:account-id:topic-name
+      topic-arn: ${SNS_TOPIC_ARN}
     sqs:
-      queue-url: https://sqs.region-code.amazonaws.com/account-id/queue-name
+      queue-url: ${SQS_QUEUE_URL}
