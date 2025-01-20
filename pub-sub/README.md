@@ -36,7 +36,7 @@ For simplicity, we'll use a single IAM user that holds permission to perform all
 1. Create a standard SQS queue in the desired region
 2. Subscribe to the earlier created SNS topic
 3. In the SQS queue policy, add the below `Statement` to allow the SNS topic to send messages to the queue:
-    ```
+    ```json
    {
       "Effect": "Allow",
       "Principal": {
@@ -52,7 +52,7 @@ For simplicity, we'll use a single IAM user that holds permission to perform all
     }
     ```
 4. Add the below `Statement` to the existing IAM user:
-    ```
+    ```json
     {
         "Sid": "SQSSubscriberPermission",
         "Effect": "Allow",
@@ -64,3 +64,56 @@ For simplicity, we'll use a single IAM user that holds permission to perform all
     }
     ```
 5. Configure the SQS queue URL and region in the `application.yaml` file.
+
+### Integrating KMS to the architecture
+1. Create a custom KMS symmetric key
+2. Enable encryption on both our SNS topic and SQS queue by configuring them to use our newly created KMS key.
+3. In the KMS Key policy, add the below two statements to allow both the SNS topic and SQS queue to use the key:
+    ```json
+    {
+        "Effect": "Allow",
+        "Principal": {
+            "Service": "sqs.amazonaws.com"
+        },
+        "Action": [
+            "kms:GenerateDataKey",
+            "kms:Decrypt"
+        ],
+        "Resource": "arn:aws:kms:region-code:account-id:key/key-id",
+        "Condition": {
+            "ArnEquals": {
+                "aws:SourceArn": "arn:aws:sqs:region-code:account-id:queue-name"
+            }
+        }
+    }
+    ```
+    ```json
+    {
+        "Effect": "Allow",
+        "Principal": {
+            "Service": "sns.amazonaws.com"
+        },
+        "Action": [
+            "kms:GenerateDataKey",
+            "kms:Decrypt"
+        ],
+        "Resource": "arn:aws:kms:region-code:account-id:key/key-id",
+        "Condition": {
+            "ArnEquals": {
+                "aws:SourceArn": "arn:aws:sns:region-code:account-id:topic-name"
+            }
+        }
+    }
+    ```
+4. Add the below `Statement` to the existing IAM user:
+    ```json
+    {
+        "Sid": "KMSSecurityCompliance",
+        "Effect": "Allow",
+        "Action": [
+            "kms:GenerateDataKey",
+            "kms:Decrypt"
+        ],
+        "Resource": "arn:aws:kms:region-code:account-id:key/key-id"
+    }
+    ```
