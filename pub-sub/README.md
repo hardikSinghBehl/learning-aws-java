@@ -2,10 +2,16 @@
 
 The sample project acts as both a publisher to an SNS topic and a subscriber to the corresponding subscriber SQS queue.
 
+The application exposes a single POST REST API `/api/v1/users` which when invoked publishes a message to the configured SNS topic.
+
+The application also contains a listener class that polls the SQS queue sbuscribed to the configured topic and logs the recevied message.
+
+For simplicity, we'll use a single IAM user that holds permission to perform all desired operations.
+
 ### Configuring Publisher
 1. Create an SNS topic in the desired region
 2. Create an IAM user
-3. Configure the below policy to the created IAM user
+3. Configure the below policy to the created IAM user:
 
     ```json
     {
@@ -25,3 +31,36 @@ The sample project acts as both a publisher to an SNS topic and a subscriber to 
     }
     ```
 4. Configure the IAM user security credentials, SNS topic region and ARN in the `application.yaml` file.
+
+### Configuring Subscriber
+1. Create a standard SQS queue in the desired region
+2. Subscribe to the earlier created SNS topic
+3. In the SQS queue policy, add the below `Statement` to allow the SNS topic to send messages to the queue:
+    ```
+   {
+      "Effect": "Allow",
+      "Principal": {
+          "Service": "sns.amazonaws.com"
+      },
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:sqs:region-code:account-id:queue-name",
+      "Condition": {
+          "ArnEquals": {
+              "aws:SourceArn": "arn:aws:sns:region-code:account-id:topic-name"
+          }
+      }
+    }
+    ```
+4. Add the below `Statement` to the existing IAM user:
+    ```
+    {
+        "Sid": "SQSSubscriberPermission",
+        "Effect": "Allow",
+        "Action": [
+            "sqs:ReceiveMessage",
+            "sqs:DeleteMessage"
+        ],
+        "Resource": "arn:aws:sqs:region-code:account-id:queue-name"
+    }
+    ```
+5. Configure the SQS queue URL and region in the `application.yaml` file.
