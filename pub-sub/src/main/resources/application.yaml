@@ -1,1 +1,13 @@
-spring.application.name=pub-sub
+spring:
+  cloud:
+    aws:
+      credentials:
+        access-key: ${ACCESS_KEY}
+        secret-key: ${SECRET_KEY}
+      sns:
+        region: ${AWS_REGION}
+
+com:
+  upwork:
+    sns:
+      topic-arn: arn:aws:sns:ap-south-1:767994595680:upwork-topic

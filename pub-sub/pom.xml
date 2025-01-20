@@ -17,15 +17,20 @@
     <name>pub-sub</name>
     <description>proof-of-concept demonstrating integration of AWS SNS and SQS to implement a publisher-subscriber architecture</description>
 
-
     <properties>
         <java.version>23</java.version>
+        <spring.cloud.version>3.3.0</spring.cloud.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.awspring.cloud</groupId>
+            <artifactId>spring-cloud-aws-starter-sns</artifactId>
+            <version>${spring.cloud.version}</version>
         </dependency>
     </dependencies>
 
