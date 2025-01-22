@@ -37,7 +37,7 @@ public class UserRepository {
         var partitionKey = Key.builder().partitionValue(id.toString()).build();
         return Optional
             .ofNullable(dynamoDbTemplate.load(partitionKey, User.class))
-            .orElseThrow(RuntimeException::new);
+            .orElseThrow(InvalidUserIdException::new);
     }
 
     public List<User> findAll() {
@@ -59,7 +59,7 @@ public class UserRepository {
             .items()
             .stream()
             .findFirst()
-            .orElseThrow(RuntimeException::new);
+            .orElseThrow(InvalidUserEmailException::new);
     }
 
 }
