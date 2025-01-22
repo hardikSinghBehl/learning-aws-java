@@ -2,12 +2,16 @@ spring:
   cloud:
     aws:
       credentials:
-        access-key: ${ACCESS_KEY}
-        secret-key: ${SECRET_KEY}
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
       region:
         static: ${AWS_REGION}
+      secretsmanager:
+        reload:
+          strategy: refresh
+          period: 20s
   config:
-    import: aws-secretsmanager:secret-name
+    import: aws-secretsmanager:${AWS_SECRET_NAME}
 
 com:
   upwork:

@@ -19,7 +19,8 @@
 
     <properties>
         <java.version>23</java.version>
-        <spring.cloud.version>3.3.0</spring.cloud.version>
+        <spring.cloud.version>4.2.0</spring.cloud.version>
+        <awsspring.cloud.version>3.3.0</awsspring.cloud.version>
     </properties>
 
     <dependencies>
@@ -30,16 +31,32 @@
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-sns</artifactId>
-            <version>${spring.cloud.version}</version>
+            <version>${awsspring.cloud.version}</version>
         </dependency>
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-sqs</artifactId>
-            <version>${spring.cloud.version}</version>
+            <version>${awsspring.cloud.version}</version>
         </dependency>
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
+            <version>${awsspring.cloud.version}</version>
+        </dependency>
+
+        <!-- secrets reload -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-commons</artifactId>
+            <version>${spring.cloud.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-context</artifactId>
             <version>${spring.cloud.version}</version>
         </dependency>
     </dependencies>

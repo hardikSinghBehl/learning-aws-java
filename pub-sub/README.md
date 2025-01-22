@@ -133,3 +133,21 @@ For our demonstration, we'll store the SNS topic ARN and SQS queue URL to secret
         "Resource": "arn:aws:secretsmanager:region-code:account-id:secret:secret-name"
     }
     ```
+   
+### Automatic Properties Refresh When Secrets Manager Updated
+
+In order for the Spring Boot application to automatically refresh properties when they're altered in AWS secrets manager, we'll add the below configuration properties to our `application.yaml` file:
+
+```yaml
+spring:
+  cloud:
+    aws:
+      secretsmanager:
+        reload:
+          strategy: refresh
+          period: 20s
+``` 
+
+We encapsulate our SNS topic ARN property in the `AWSSnsConfigurationProperties` class that's annotated with `@ConfigurationProperties`. The class is then injected into the `UserService` class which uses the ARN to publish messages to the SNS topic. The topic ARN value will be refreshed automatically if changed.
+
+Additionally, in our `NotificationDispatchListener` class where we use `@Value` to fetch the queue URL, we'll annotate the class with `@RefreshScope` to have the same behavior.
