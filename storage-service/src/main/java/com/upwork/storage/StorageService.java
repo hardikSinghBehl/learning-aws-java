@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URL;
+import java.time.Duration;
 import java.util.Map;
 
 @Service
@@ -49,6 +51,21 @@ public class StorageService {
     public void delete(String key) {
         s3Template.deleteObject(bucketName, key);
         log.info("File '{}' deleted from S3 bucket '{}'", key, bucketName);
+    }
+
+    public URL generateViewablePresignedUrl(String key) {
+        var urlValidity = Duration.ofMinutes(1);
+        var presignedUrl = s3Template.createSignedGetURL(bucketName, key, urlValidity);
+        log.info("Generated viewable presigned URL for '{}' in bucket '{}' with {} validity", key, bucketName, urlValidity);
+        return presignedUrl;
+    }
+
+    public URL generateUploadablePresignedUrl(String key, String md5Hash, long contentLength) {
+        var urlValidity = Duration.ofMinutes(1);
+        var objectMetadata = ObjectMetadata.builder().contentMD5(md5Hash).contentLength(contentLength).build();
+        var presignedUrl = s3Template.createSignedPutURL(bucketName, key, urlValidity, objectMetadata, null);
+        log.info("Generated uploadable presigned URL for '{}' in bucket '{}' with {} validity", key, bucketName, urlValidity);
+        return presignedUrl;
     }
 
 }
