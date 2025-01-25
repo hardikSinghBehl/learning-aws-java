@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      region:
+        static: ${AWS_REGION}
+
+com:
+  upwork:
+    storage:
+      s3:
+        bucket-name: ${S3_BUCKET_NAME}
